@@ -11,6 +11,7 @@
 
 using namespace std;
 typedef vector<vector<double>> matrix;
+double predict(vector<double> coefficients, double intercept, vector<double> values, int n);
 
 template<typename T> void printElement(T t, const int& width)
 {
@@ -76,8 +77,10 @@ int main(){
   matrix train;
   matrix test;
 
+  random_shuffle(dataset.begin(), dataset.end());
+
   for (int i = 0; i < dataset.size(); i++){
-    if ((float) rand()/RAND_MAX > 0.66)
+    if ((float) rand()/RAND_MAX > 0.67)
       test.push_back(dataset[i]);
     else 
       train.push_back(dataset[i]);
@@ -85,17 +88,19 @@ int main(){
 
   // Dependent variable sepal_length (first column)
   // Train regression model:
+  int dependent_column = 0;
   int rows = train.size();
   int columns = train[0].size();
 
   // Calculate statistics:
-  double sum_xy[columns] = {0};
-  double sum_x_squared[columns] = {0};
-  double averages[columns] = {0};
+  vector<double> sum_xy(columns, 0);
+  vector<double> sum_x_squared(columns, 0);
+  vector<double> averages(columns, 0);
+  vector<double> coefficients;
 
   for (int i = 0; i < rows; i++){
     for (int j = 0; j < columns; j++){
-      sum_xy[j] += train[i][0] * train[i][j];
+      sum_xy[j] += train[i][dependent_column] * train[i][j];
       sum_x_squared[j] += train[i][j] * train[i][j];
       averages[j] += train[i][j];
     }
@@ -103,19 +108,18 @@ int main(){
   for (int i = 0; i < columns; i++){
     averages[i] = averages[i] / rows;
   }
-
   // Calculate B co-efficients:
-  int dependent_column = 0;
-  double coefficients[columns] = {0};
   for (int i = 0; i < columns; i++){
-    coefficients[i] = (sum_xy[i] - rows * averages[i] * averages[dependent_column]) / (sum_x_squared[i] - rows * averages[dependent_column]);
+    coefficients.push_back((sum_xy[i] - rows * averages[i] * averages[dependent_column]) / (sum_x_squared[i] - rows *  averages[dependent_column] * averages[dependent_column]));
   }
-  // Calculate B intercept:
   coefficients[dependent_column] = 0;
+  // Calculate B intercept:
   double intercept = averages[dependent_column];
   for (int i = 0; i < columns; i++){
     intercept -= coefficients[i] * averages[i];
   }
+  //coefficients[dependent_column] = 0;
+  coefficients.erase(coefficients.begin());
 
   std::cout << std::fixed;
   std::cout << std::setprecision(4);
@@ -133,20 +137,20 @@ int main(){
   cout << '\n';
 
   cout << "\nSum xy:\t\t\t";
-  for (int i = 0; i < columns; i++)
-    printElement(sum_xy[i], numWidth);
+  for (double num: sum_xy)
+    printElement(num, numWidth);
     
   cout << "\nSum x squared:\t\t";
-  for (int i = 0; i < columns; i++)
-    printElement(sum_x_squared[i], numWidth);
+  for (double num: sum_x_squared)
+    printElement(num, numWidth);
 
   cout << "\nAverage:\t\t";
-  for (int i = 0; i < columns; i++)
-    printElement(averages[i], numWidth);
+  for (double num: averages)
+    printElement(num, numWidth);
 
-  cout << "\nB co-efficient:\t\t";
-  for (int i = 0; i < columns; i++)
-    printElement(coefficients[i], numWidth);
+  cout << "\n\nB co-efficient:\t\t\t\t";
+  for (double num: coefficients)
+    printElement(num, numWidth);
 
   cout << "\nB intercept:\t\t" << intercept << endl;
 
@@ -162,6 +166,8 @@ int main(){
     cout<<"\n";
   }
 
+
+
   cout << "\nTest dataset: " << endl;
   cout << "Rows: " << test.size() << endl;
   for(int i = 0; i < header.size(); i++)
@@ -173,6 +179,22 @@ int main(){
     }
     cout<<"\n";
   }
+  cout << "Testing dataset:" << endl;
+  for (int i = 0; i < test.size(); i++){
+    vector<double> test_values = test[i];
+    test_values.erase(test_values.begin());
+    cout << "Expected: " << test[i][0] << "\tPredicted: " << predict(coefficients, intercept, test_values, 4) << "\tClass: " << test[i][4] << endl;
+  }
+  vector<double> test_values = {3.4,1.4,0.3,0};
+  cout << predict(coefficients, intercept, test_values, 4) << endl;
   
   return 0;
+}
+
+double predict(vector<double> coefficients, double intercept, vector<double> values, int n){
+  double value = intercept;
+  for (int i = 0; i < n; i++){
+    value += coefficients[i] * values[i];
+  }
+  return value;
 }
