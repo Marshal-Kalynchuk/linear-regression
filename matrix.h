@@ -66,6 +66,8 @@ public:
   void set_sum_product_column();
   void set_variance_column();
 
+  void set_regression_model(int dependent_column);
+
   void print_summary_stats();
 
   void quicksort(double array[], int first, int last);
@@ -75,7 +77,6 @@ private:
   vector<vector<double>> matrixM;
   int rowsM;
   int columnsM;
-  int dependent_columnM;
 
   vector<string> headerM;
   vector<double> sum_columnsM;
@@ -87,6 +88,9 @@ private:
   vector<double> sum_product_columnsM;
   vector<double> variance_columnsM;
 
+  int dependent_columnM;
+  vector<double> regression_coefficientsM;
+  double regression_interceptM;
 };
 
 #endif

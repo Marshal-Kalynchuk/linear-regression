@@ -14,11 +14,6 @@
 using namespace std;
 double predict(vector<double> coefficients, double intercept, vector<double> values, int n);
 
-template<typename T> void printElement(T t, const int& width)
-{
-  cout << left << setw(width) << setfill(' ') << t;
-}
-
 int main(){
 
   vector<vector<string>> string_data;
@@ -74,6 +69,7 @@ int main(){
     dataset.push_back(row);
   }
   Matrix df(dataset, header);
+  df.set_regression_model(0);
   df.print_summary_stats();
 
 

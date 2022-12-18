@@ -76,6 +76,24 @@ Matrix Matrix::drop_column(int column_id) const{
 
 }
 
+void Matrix::set_regression_model(int dependent_column){
+  dependent_columnM = dependent_column;
+  set_sum_product_column();
+  regression_coefficientsM = vector<double>(columnsM-1, 0);
+  regression_interceptM = mean_columnsM[dependent_column];
+  for (int i = 0, j = 0; i < columnsM; i++){
+    if (i == dependent_columnM) continue;
+    else {
+      regression_coefficientsM[j] = (
+        (sum_product_columnsM[i] - rowsM * mean_columnsM[i] * mean_columnsM[dependent_columnM]) 
+        / 
+        (sum_squared_columnsM[i] - rowsM * mean_columnsM[i]));
+        regression_interceptM -= regression_coefficientsM[i];
+      j++;
+    }
+  }
+}
+
 void Matrix::set_sum_column(){
   for(int i = 0; i < columnsM; i++){
     sum_columnsM[i] = 0;
@@ -130,7 +148,11 @@ void Matrix::set_sum_squared_column(){
 }
 
 void Matrix::set_sum_product_column(){
-
+  for (int i = 0; i < columnsM; i++){
+    sum_product_columnsM[i] = 0;
+    for (int j = 0; j < rowsM; j++)
+    sum_product_columnsM[i] += matrixM[j][dependent_columnM] * matrixM[i][j];
+  }
 }
 
 template<typename T> void printElement(T t, const int& width){
@@ -143,7 +165,7 @@ void Matrix::print_summary_stats(){
   const int nameWidth     = 25;
   const int numWidth      = 25;
 
-  cout << "Sample statistics:" << endl;
+  std::cout << "Sample statistics:" << endl;
   printElement("Header:", nameWidth);
   for(int i = 0; i < headerM.size(); i++)
     printElement(headerM[i], nameWidth);
@@ -175,7 +197,19 @@ void Matrix::print_summary_stats(){
   printElement("\nStandard Deviation:", nameWidth);
   for (double num: std_columnsM)
     printElement(num, numWidth);
-  cout << '\n' << endl;
+  
+  std::cout << "\n\nRegression model:" << endl;
+  printElement("Parameters:", nameWidth);
+  for (int i = 0; i < columnsM; i++){
+    if (i == dependent_columnM) continue;
+    else printElement(headerM[i], numWidth);
+  }
+  printElement("\nCoefficients:", nameWidth);
+  for (double num: regression_coefficientsM)
+    printElement(num, numWidth);
+  printElement("\nIntercept:", nameWidth);
+  printElement(regression_interceptM, numWidth);
+  std::cout << endl;
 }
 
 void Matrix::quicksort(double array[], int first, int last){
