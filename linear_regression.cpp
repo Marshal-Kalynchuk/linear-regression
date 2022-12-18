@@ -77,17 +77,54 @@ int main(){
       train.push_back(dataset[i]);
   }
 
+  // Dependent variable sepal_length (first column)
   // Train regression model:
+  int rows = train.size();
+  int columns = train[0].size();
 
-  // Print data
-  
+  double sum_xy[columns] = {0};
+  double sum_x_squared[columns] = {0};
+  double averages[columns] = {0};
+
+  for (int i = 0; i < rows; i++){
+    for (int j = 0; j < columns; j++){
+      sum_xy[j] += train[i][0] * train[i][j];
+      sum_x_squared[j] += train[i][j] * train[i][j];
+      averages[j] += train[i][j];
+    }
+  }
+  for (int i = 0; i < columns; i++){
+    averages[i] = averages[i] / rows;
+  }
+
+  // Print data:
   cout << "Training dataset: " << endl;
   cout << "Rows: " << train.size() << endl;
+  
+  cout << "Stats:\n\t\t";
   for(int i = 0; i < header.size(); i++)
     cout << header[i] << '\t';
   cout << '\n';
-  for(int i = 0; i < train.size() && i < 5; i++){
-    for(int j = 0; j < train[i].size(); j++){
+
+  cout << "\nSum xy:\t\t";
+  for (int i = 0; i < columns; i++)
+    cout << sum_xy[i] << "\t\t";
+    
+  cout << "\nSum x squared:\t";
+  for (int i = 0; i < columns; i++)
+    cout << sum_x_squared[i] << "\t\t";
+
+  cout << "\nAverage:\t";
+  for (int i = 0; i < columns; i++)
+    cout << averages[i] << "\t\t";
+
+  cout << "\n\nTop 5: " << endl;
+  for(int i = 0; i < header.size(); i++)
+    cout << header[i] << '\t';
+  cout << '\n';
+  for(int i = 0; i < rows && i < 5; i++){
+    for(int j = 0; j < columns; j++){
+
       cout<<train[i][j]<<"\t\t";
     }
     cout<<"\n";
