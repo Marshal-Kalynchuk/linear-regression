@@ -53,7 +53,12 @@ public:
   // REQUIRES: Column index.
   // PROMISES: Drops a column in matrix and returns the dropped column.
 
-
+  void set_mean_column()const;
+  void set_mean_squared_column()const;
+  void set_median_column()const;
+  void set_std_column()const;
+  void set_sum_squared_column()const;
+  void set_sum_product_column()const;
 
 
 private:

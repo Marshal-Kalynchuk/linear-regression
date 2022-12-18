@@ -19,6 +19,9 @@ double Matrix::get_sum_column(int column_id) const{
   assert(column_id >= 0 && column_id < columnsM);
   return sum_columnsM[column_id];
 }
+void Matrix::set_sum_column()const{
+  
+}
 
 double Matrix::get_mean_column(int column_id) const{
   assert(column_id >= 0 && column_id < columnsM);
