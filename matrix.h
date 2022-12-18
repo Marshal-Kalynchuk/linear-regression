@@ -13,9 +13,9 @@ using namespace std;
 
 class Matrix{
 public:
-  Matrix(vector<vector<double>> dataset);
+  Matrix(vector<vector<double>> dataset, vector<string> header);
 
-  ~Matrix();
+  //~Matrix();
   // PROMISES: Delete the matrix
 
   int get_rows() const { return rowsM; }
@@ -68,6 +68,8 @@ public:
 
   void print_summary_stats();
 
+  void quicksort(double array[], int first, int last);
+  int partition(double array[], int first, int last);
 
 private:
   vector<vector<double>> matrixM;

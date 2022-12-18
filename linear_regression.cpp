@@ -9,8 +9,9 @@
 #include <random>
 #include <iomanip>
 
+#include "matrix.h"
+
 using namespace std;
-typedef vector<vector<double>> matrix;
 double predict(vector<double> coefficients, double intercept, vector<double> values, int n);
 
 template<typename T> void printElement(T t, const int& width)
@@ -45,7 +46,7 @@ int main(){
   vector<string> header = string_data[0];
   string_data.erase(string_data.begin());
 
-  matrix dataset;
+  vector<vector<double>> dataset;
   vector<double> row;
 
   map<string, double> class_label_map = {
@@ -72,7 +73,11 @@ int main(){
     // Add row to matrix
     dataset.push_back(row);
   }
+  Matrix df(dataset, header);
+  df.print_summary_stats();
 
+
+  #if 0
   // Split into train and test:
   matrix train;
   matrix test;
@@ -187,7 +192,7 @@ int main(){
   }
   vector<double> test_values = {3.4,1.4,0.3,0};
   cout << predict(coefficients, intercept, test_values, 4) << endl;
-  
+  #endif
   return 0;
 }
 
