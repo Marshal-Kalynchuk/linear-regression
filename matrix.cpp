@@ -23,14 +23,6 @@ Matrix::Matrix(vector<vector<double>> dataset, vector<string> header){
   mean_squared_columnsM = vector<double>(columnsM, 0);
   sum_product_columnsM = vector<double>(columnsM, 0);
   variance_columnsM = vector<double>(columnsM, 0);
-
-  set_sum_column();
-  set_sum_squared_column();
-  set_mean_column();
-  set_mean_squared_column();
-  set_median_column();
-  set_variance_column();
-  set_std_column();
 }
 
 double Matrix::get_sum_column(int column_id) const{
@@ -88,7 +80,7 @@ void Matrix::set_regression_model(int dependent_column){
         (sum_product_columnsM[i] - rowsM * mean_columnsM[i] * mean_columnsM[dependent_columnM]) 
         / 
         (sum_squared_columnsM[i] - rowsM * mean_columnsM[i]));
-        regression_interceptM -= regression_coefficientsM[i];
+        regression_interceptM -= regression_coefficientsM[j] * mean_columnsM[i];
       j++;
     }
   }
@@ -151,8 +143,25 @@ void Matrix::set_sum_product_column(){
   for (int i = 0; i < columnsM; i++){
     sum_product_columnsM[i] = 0;
     for (int j = 0; j < rowsM; j++)
-    sum_product_columnsM[i] += matrixM[j][dependent_columnM] * matrixM[i][j];
+    sum_product_columnsM[i] += matrixM[j][dependent_columnM] * matrixM[j][i];
   }
+}
+
+void Matrix::set_statistics(){
+  set_sum_column();
+  set_sum_squared_column();
+  set_mean_column();
+  set_mean_squared_column();
+  set_median_column();
+  set_variance_column();
+  set_std_column();
+}
+
+double Matrix::predict(vector<double> parameters)const{
+  double result = regression_interceptM;
+  for (int i = 0; i < regression_coefficientsM.size(); i++)
+    result += regression_coefficientsM[i] * parameters[i];
+  return result;
 }
 
 template<typename T> void printElement(T t, const int& width){

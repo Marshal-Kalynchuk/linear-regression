@@ -70,8 +70,11 @@ int main(){
   }
   Matrix df(dataset, header);
   df.set_regression_model(0);
+  df.set_statistics();
   df.print_summary_stats();
-
+  vector<double> test_values = {3.4,1.4,0.3,0};
+  double res = df.predict(test_values);
+  cout << res << endl;
 
   #if 0
   // Split into train and test:
@@ -87,115 +90,8 @@ int main(){
       train.push_back(dataset[i]);
   }
 
-  // Dependent variable sepal_length (first column)
-  // Train regression model:
-  int dependent_column = 0;
-  int rows = train.size();
-  int columns = train[0].size();
-
-  // Calculate statistics:
-  vector<double> sum_xy(columns, 0);
-  vector<double> sum_x_squared(columns, 0);
-  vector<double> averages(columns, 0);
-  vector<double> coefficients;
-
-  for (int i = 0; i < rows; i++){
-    for (int j = 0; j < columns; j++){
-      sum_xy[j] += train[i][dependent_column] * train[i][j];
-      sum_x_squared[j] += train[i][j] * train[i][j];
-      averages[j] += train[i][j];
-    }
-  }
-  for (int i = 0; i < columns; i++){
-    averages[i] = averages[i] / rows;
-  }
-  // Calculate B co-efficients:
-  for (int i = 0; i < columns; i++){
-    coefficients.push_back((sum_xy[i] - rows * averages[i] * averages[dependent_column]) / (sum_x_squared[i] - rows *  averages[dependent_column] * averages[dependent_column]));
-  }
-  coefficients[dependent_column] = 0;
-  // Calculate B intercept:
-  double intercept = averages[dependent_column];
-  for (int i = 0; i < columns; i++){
-    intercept -= coefficients[i] * averages[i];
-  }
-  //coefficients[dependent_column] = 0;
-  coefficients.erase(coefficients.begin());
-
-  std::cout << std::fixed;
-  std::cout << std::setprecision(4);
-
-  const int nameWidth     = 20;
-  const int numWidth      = 20;
-
-  // Print data:
-  cout << "Training dataset: " << endl;
-  cout << "Rows: " << train.size() << endl;
-  
-  cout << "Stats:\n\t\t\t";
-  for(int i = 0; i < header.size(); i++)
-    printElement(header[i], nameWidth);
-  cout << '\n';
-
-  cout << "\nSum xy:\t\t\t";
-  for (double num: sum_xy)
-    printElement(num, numWidth);
-    
-  cout << "\nSum x squared:\t\t";
-  for (double num: sum_x_squared)
-    printElement(num, numWidth);
-
-  cout << "\nAverage:\t\t";
-  for (double num: averages)
-    printElement(num, numWidth);
-
-  cout << "\n\nB co-efficient:\t\t\t\t";
-  for (double num: coefficients)
-    printElement(num, numWidth);
-
-  cout << "\nB intercept:\t\t" << intercept << endl;
-
-  cout << "\n\nTop 5: " << endl;
-  for(int i = 0; i < header.size(); i++)
-    cout << header[i] << '\t';
-  cout << '\n';
-  for(int i = 0; i < rows && i < 5; i++){
-    for(int j = 0; j < columns; j++){
-
-      cout<<train[i][j]<<"\t\t";
-    }
-    cout<<"\n";
-  }
-
-
-
-  cout << "\nTest dataset: " << endl;
-  cout << "Rows: " << test.size() << endl;
-  for(int i = 0; i < header.size(); i++)
-    cout << header[i] << '\t';
-  cout << '\n';
-  for(int i = 0; i < test.size() && i < 5; i++){
-    for(int j = 0; j < test[i].size(); j++){
-      cout<<test[i][j]<<"\t\t";
-    }
-    cout<<"\n";
-  }
-  cout << "Testing dataset:" << endl;
-  for (int i = 0; i < test.size(); i++){
-    vector<double> test_values = test[i];
-    test_values.erase(test_values.begin());
-    cout << "Expected: " << test[i][0] << "\tPredicted: " << predict(coefficients, intercept, test_values, 4) << "\tClass: " << test[i][4] << endl;
-  }
-  vector<double> test_values = {3.4,1.4,0.3,0};
-  cout << predict(coefficients, intercept, test_values, 4) << endl;
   #endif
+
   return 0;
 }
 
-double predict(vector<double> coefficients, double intercept, vector<double> values, int n){
-  double value = intercept;
-  for (int i = 0; i < n; i++){
-    value += coefficients[i] * values[i];
-  }
-  return value;
-}

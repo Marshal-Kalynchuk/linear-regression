@@ -49,6 +49,10 @@ public:
   // REQUIRES: Index of columns.
   // PROMISES: Returns the sum product of column and dependent column.
 
+  double predict(vector<double> parameters) const;
+  // REQUIRES: Parameters size == coefficients size, parameters order == coefficients order.
+  // PROMISES: Returns the predicted value of the regression model.
+
   Matrix drop_row(int row_id) const;
   // REQUIRES: Row index.
   // PROMISES: Drops a row in matrix and returns the dropped row.
@@ -67,6 +71,7 @@ public:
   void set_variance_column();
 
   void set_regression_model(int dependent_column);
+  void set_statistics();
 
   void print_summary_stats();
 
