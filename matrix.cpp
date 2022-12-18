@@ -117,3 +117,49 @@ void Matrix::set_sum_squared_column(){
 void Matrix::set_sum_product_column(){
 
 }
+
+template<typename T> void printElement(T t, const int& width){
+  cout << left << setw(width) << setfill(' ') << t;
+}
+void Matrix::print_summary_stats(){
+  std::cout << std::fixed;
+  std::cout << std::setprecision(3);
+
+  const int nameWidth     = 20;
+  const int numWidth      = 20;
+
+  printElement("Sample statistics:\n", nameWidth);
+  printElement("Header: ", nameWidth);
+  for(int i = 0; i < headerM.size(); i++)
+    printElement(headerM[i], nameWidth);
+  cout << '\n';
+
+  printElement("Sum:", nameWidth);
+  for (double num: sum_columnsM)
+    printElement(num, numWidth);
+
+  printElement("Sum Squared:", nameWidth);
+  for (double num: sum_squared_columnsM)
+    printElement(num, numWidth);
+
+  printElement("Mean:", nameWidth);
+  for (double num: mean_columnsM)
+    printElement(num, numWidth);
+  
+  printElement("Mean Squared:", nameWidth);
+  for (double num: mean_columnsM)
+    printElement(num, numWidth);
+
+  printElement("Median:", nameWidth);
+  for (double num: median_columnsM)
+    printElement(num, numWidth);
+
+  printElement("Standard Deviation:", nameWidth);
+  for (double num: mean_columnsM)
+    printElement(num, numWidth);
+
+  printElement("Varience:", nameWidth);
+  for (double num: median_columnsM)
+    printElement(num, numWidth);
+
+}

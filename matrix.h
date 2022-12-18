@@ -1,10 +1,13 @@
 
 #ifndef matrix
 #define matrix
+#include <iostream>
+#include <fstream>
 #include <iomanip>
 #include <vector>
 #include <cassert>
 #include <math.h>
+#include <string.h>
 
 using namespace std;
 
@@ -63,6 +66,8 @@ public:
   void set_sum_product_column();
   void set_variance_column();
 
+  void print_summary_stats();
+
 
 private:
   vector<vector<double>> matrixM;
@@ -70,6 +75,7 @@ private:
   int columnsM;
   int dependent_columnM;
 
+  vector<string> headerM;
   vector<double> sum_columnsM;
   vector<double> mean_columnsM;
   vector<double> median_columnsM;
