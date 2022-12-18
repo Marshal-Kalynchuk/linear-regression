@@ -3,6 +3,7 @@
 #define matrix
 #include <iomanip>
 #include <vector>
+#include <cassert>
 
 using namespace std;
 
