@@ -4,146 +4,156 @@ Matrix::Matrix(vector<vector<double>> dataset, vector<string> header){
   headerM = header;
   // Set rowsM and columnsM
   rowsM = dataset.size();
-  columnsM = dataset[0].size();
+  colsM = dataset[0].size();
   // initialize the matrix off a 2d vector of doubles
   vector<double> row;
   for (int i = 0; i < rowsM; i++){
     row.clear();
-    for (int j = 0; j < columnsM; j++){
+    for (int j = 0; j < colsM; j++){
       row.push_back(dataset[i][j]);
     }
     matrixM.push_back(row);
   }
   // Init helper attrubute vectors:
-  sum_columnsM = vector<double>(columnsM, 0);
-  mean_columnsM = vector<double>(columnsM, 0);
-  median_columnsM = vector<double>(columnsM, 0);
-  std_columnsM = vector<double>(columnsM, 0);
-  sum_squared_columnsM = vector<double>(columnsM, 0);
-  mean_squared_columnsM = vector<double>(columnsM, 0);
-  sum_product_columnsM = vector<double>(columnsM, 0);
-  variance_columnsM = vector<double>(columnsM, 0);
+  sumM = vector<double>(colsM, 0);
+  meanM = vector<double>(colsM, 0);
+  medianM = vector<double>(colsM, 0);
+  first_quartileM = vector<double>(colsM, 0);
+  third_quartileM = vector<double>(colsM, 0);
+  stddevM = vector<double>(colsM, 0);
+  sum_squaredM = vector<double>(colsM, 0);
+  mean_squaredM = vector<double>(colsM, 0);
+  sum_productM = vector<double>(colsM, 0);
+  varianceM = vector<double>(colsM, 0);
 }
 
-double Matrix::get_sum_column(int column_id) const{
-  assert(column_id >= 0 && column_id < columnsM);
-  return sum_columnsM[column_id];
+double Matrix::get_sum_column(int col) const{
+  assert(col >= 0 && col < colsM);
+  return sumM[col];
 }
 
-double Matrix::get_mean_column(int column_id) const{
-  assert(column_id >= 0 && column_id < columnsM);
-  return mean_columnsM[column_id];
+double Matrix::get_mean_column(int col) const{
+  assert(col >= 0 && col < colsM);
+  return meanM[col];
 }
 
-double Matrix::get_mean_squared_column(int column_id) const{
-  assert(column_id >= 0 && column_id < columnsM);
-  return mean_squared_columnsM[column_id];
+double Matrix::get_mean_squared_column(int col) const{
+  assert(col >= 0 && col < colsM);
+  return mean_squaredM[col];
 }
 
-double Matrix::get_median_column(int column_id) const{
-  assert(column_id >= 0 && column_id < columnsM);
-  return median_columnsM[column_id];
+double Matrix::get_median_column(int col) const{
+  assert(col >= 0 && col < colsM);
+  return medianM[col];
 }
 
-double Matrix::get_std_column(int column_id) const{
-  assert(column_id >= 0 && column_id < columnsM);
-  return std_columnsM[column_id];
+double Matrix::get_std_column(int col) const{
+  assert(col >= 0 && col < colsM);
+  return stddevM[col];
 }
 
-double Matrix::get_sum_squared_column(int column_id) const{
-  assert(column_id >= 0 && column_id < columnsM);
-  return sum_squared_columnsM[column_id];
+double Matrix::get_sum_squared_column(int col) const{
+  assert(col >= 0 && col < colsM);
+  return sum_squaredM[col];
 }
 
-double Matrix::get_sum_product_column(int column_id) const{
-  assert(column_id >= 0 && column_id < columnsM);
-  return sum_product_columnsM[column_id];
+double Matrix::get_sum_product_column(int col) const{
+  assert(col >= 0 && col < colsM);
+  return sum_productM[col];
 }
 
-Matrix Matrix::drop_row(int row_id) const{
+vector<double> Matrix::drop_row(int row_id){
+  vector<double> row = matrixM[row_id];
+  matrixM.erase(matrixM.begin() + row_id);
+  return row;
+}
+
+vector<double> Matrix::drop_column(int col){
 
 }
 
-Matrix Matrix::drop_column(int column_id) const{
-
+Matrix Matrix::drop_outliers(){
+  
 }
 
 void Matrix::set_regression_model(int dependent_column){
   dependent_columnM = dependent_column;
   set_sum_product_column();
-  regression_coefficientsM = vector<double>(columnsM-1, 0);
-  regression_interceptM = mean_columnsM[dependent_column];
-  for (int i = 0, j = 0; i < columnsM; i++){
+  regression_coefficientsM = vector<double>(colsM-1, 0);
+  regression_interceptM = meanM[dependent_column];
+  for (int i = 0, j = 0; i < colsM; i++){
     if (i == dependent_columnM) continue;
     else {
       regression_coefficientsM[j] = (
-        (sum_product_columnsM[i] - rowsM * mean_columnsM[i] * mean_columnsM[dependent_columnM]) 
+        (sum_productM[i] - rowsM * meanM[i] * meanM[dependent_columnM]) 
         / 
-        (sum_squared_columnsM[i] - rowsM * mean_columnsM[i]));
-        regression_interceptM -= regression_coefficientsM[j] * mean_columnsM[i];
+        (sum_squaredM[i] - rowsM * meanM[i]));
+        regression_interceptM -= regression_coefficientsM[j] * meanM[i];
       j++;
     }
   }
 }
 
 void Matrix::set_sum_column(){
-  for(int i = 0; i < columnsM; i++){
-    sum_columnsM[i] = 0;
+  for(int i = 0; i < colsM; i++){
+    sumM[i] = 0;
     for (int j = 0; j < rowsM; j++)
-      sum_columnsM[i] += matrixM[j][i];
+      sumM[i] += matrixM[j][i];
   }
 }
 
 void Matrix::set_mean_column(){
-  for(int i = 0; i < columnsM; i++)
-    mean_columnsM[i] = sum_columnsM[i] / rowsM;
+  for(int i = 0; i < colsM; i++)
+    meanM[i] = sumM[i] / rowsM;
 }
 
 void Matrix::set_mean_squared_column(){
-  for(int i = 0; i < columnsM; i++)
-    mean_squared_columnsM[i] = mean_columnsM[i] * mean_columnsM[i];
+  for(int i = 0; i < colsM; i++)
+    mean_squaredM[i] = meanM[i] * meanM[i];
 }
 
-void Matrix::set_median_column(){
+void Matrix::set_quartiles(){
   double column[rowsM];
-  for(int i = 0; i < columnsM; i++){
+  for(int i = 0; i < colsM; i++){
     for (int j = 0; j < rowsM; j++){
       column[j] = matrixM[j][i];
     }
-    quicksort(column, 0, rowsM-1);
-    median_columnsM[i] = 0;
-    if (rowsM % 2 == 0)
-      median_columnsM[i] = (column[rowsM / 2] + column[(rowsM / 2) + 1]) / 2;
+    sort(column, column + rowsM);
+    medianM[i] = 0;
+    if (rowsM % 2 == 1)
+      medianM[i] = column[rowsM / 2];
     else
-      median_columnsM[i] = column[rowsM / 2];
+      medianM[i] = (column[rowsM / 2] + column[(rowsM / 2) - 1]) / 2.0;
+    first_quartileM[i] = column[rowsM / 4];
+    third_quartileM[i] = column[3 * rowsM / 4];
   }
 }
 
 void Matrix::set_variance_column(){
-  for (int i = 0; i < columnsM; i++){
-    variance_columnsM[i] = (sum_squared_columnsM[i] - rowsM * mean_squared_columnsM[i]) / (rowsM - 1);
+  for (int i = 0; i < colsM; i++){
+    varianceM[i] = (sum_squaredM[i] - rowsM * mean_squaredM[i]) / (rowsM - 1);
   }
 }
 
 void Matrix::set_std_column(){
-  for (int i = 0; i < columnsM; i++){
-    std_columnsM[i] = sqrt(variance_columnsM[i]);
+  for (int i = 0; i < colsM; i++){
+    stddevM[i] = sqrt(varianceM[i]);
   }
 }
 
 void Matrix::set_sum_squared_column(){
-  for(int i = 0; i < columnsM; i++){
-  sum_squared_columnsM[i] = 0;
+  for(int i = 0; i < colsM; i++){
+  sum_squaredM[i] = 0;
   for (int j = 0; j < rowsM; j++)
-    sum_squared_columnsM[i] += matrixM[j][i] * matrixM[j][i];
+    sum_squaredM[i] += matrixM[j][i] * matrixM[j][i];
   }
 }
 
 void Matrix::set_sum_product_column(){
-  for (int i = 0; i < columnsM; i++){
-    sum_product_columnsM[i] = 0;
+  for (int i = 0; i < colsM; i++){
+    sum_productM[i] = 0;
     for (int j = 0; j < rowsM; j++)
-    sum_product_columnsM[i] += matrixM[j][dependent_columnM] * matrixM[j][i];
+    sum_productM[i] += matrixM[j][dependent_columnM] * matrixM[j][i];
   }
 }
 
@@ -152,7 +162,7 @@ void Matrix::set_statistics(){
   set_sum_squared_column();
   set_mean_column();
   set_mean_squared_column();
-  set_median_column();
+  set_quartiles();
   set_variance_column();
   set_std_column();
 }
@@ -180,36 +190,36 @@ void Matrix::print_summary_stats(){
     printElement(headerM[i], nameWidth);
 
   printElement("\nSum:", nameWidth);
-  for (double num: sum_columnsM)
+  for (double num: sumM)
     printElement(num, numWidth);
 
   printElement("\nSum of Squares:", nameWidth);
-  for (double num: sum_squared_columnsM)
+  for (double num: sum_squaredM)
     printElement(num, numWidth);
 
   printElement("\nMean:", nameWidth);
-  for (double num: mean_columnsM)
+  for (double num: meanM)
     printElement(num, numWidth);
   
   printElement("\nMean Squared:", nameWidth);
-  for (double num: mean_squared_columnsM)
+  for (double num: mean_squaredM)
     printElement(num, numWidth);
 
   printElement("\nMedian:", nameWidth);
-  for (double num: median_columnsM)
+  for (double num: medianM)
     printElement(num, numWidth);
 
   printElement("\nVarience:", nameWidth);
-  for (double num: variance_columnsM)
+  for (double num: varianceM)
     printElement(num, numWidth);
 
   printElement("\nStandard Deviation:", nameWidth);
-  for (double num: std_columnsM)
+  for (double num: stddevM)
     printElement(num, numWidth);
   
   std::cout << "\n\nRegression model:" << endl;
   printElement("Parameters:", nameWidth);
-  for (int i = 0; i < columnsM; i++){
+  for (int i = 0; i < colsM; i++){
     if (i == dependent_columnM) continue;
     else printElement(headerM[i], numWidth);
   }
@@ -221,37 +231,3 @@ void Matrix::print_summary_stats(){
   std::cout << endl;
 }
 
-void Matrix::quicksort(double array[], int first, int last){
-    if (first < last){
-        int splitpoint = partition(array, first, last);
-
-        quicksort(array, first, splitpoint-1);
-        quicksort(array, splitpoint+1, last);
-    }
-};
-
-int Matrix::partition(double array[], int first, int last){
-    const double pivotvalue = array[first];
-    int left = first + 1;
-    int right = last;
-    while(true){
-        while (left <= right && array[left] <= pivotvalue){
-            left++;
-        }
-        while (right >= left && array[right] >= pivotvalue){
-            right--;
-        }
-        if (right < left){
-            break;
-        }
-        else{
-            const double temp = array[left];
-            array[left] = array[right];
-            array[right] = temp;
-        }
-    }
-    const double temp = array[first];
-    array[first] = array[right];
-    array[right] = temp;
-    return right;
-};

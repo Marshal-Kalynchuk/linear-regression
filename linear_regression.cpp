@@ -69,8 +69,8 @@ int main(){
     dataset.push_back(row);
   }
   Matrix df(dataset, header);
-  df.set_regression_model(0);
   df.set_statistics();
+  df.set_regression_model(0);
   df.print_summary_stats();
   vector<double> test_values = {3.4,1.4,0.3,0};
   double res = df.predict(test_values);

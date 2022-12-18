@@ -8,10 +8,12 @@
 #include <cassert>
 #include <math.h>
 #include <string.h>
+#include <algorithm>
 
 using namespace std;
 
-class Matrix{
+class Matrix
+{
 public:
   Matrix(vector<vector<double>> dataset, vector<string> header);
 
@@ -19,7 +21,7 @@ public:
   // PROMISES: Delete the matrix
 
   int get_rows() const { return rowsM; }
-  int get_cols() const { return columnsM; }
+  int get_cols() const { return colsM; }
 
   double get_sum_column(int column_id) const;
   // REQUIRES: Column index.
@@ -53,18 +55,22 @@ public:
   // REQUIRES: Parameters size == coefficients size, parameters order == coefficients order.
   // PROMISES: Returns the predicted value of the regression model.
 
-  Matrix drop_row(int row_id) const;
+  vector<double> drop_row(int row_id);
   // REQUIRES: Row index.
   // PROMISES: Drops a row in matrix and returns the dropped row.
 
-  Matrix drop_column(int column_id) const;
+  vector<double> drop_column(int column_id);
   // REQUIRES: Column index.
   // PROMISES: Drops a column in matrix and returns the dropped column.
+
+  Matrix drop_outliers();
+  // REQUIRES: set_statistics
+  // PROMISES: Returns a matrix of the dropped rows.
 
   void set_sum_column();
   void set_mean_column();
   void set_mean_squared_column();
-  void set_median_column();
+  void set_quartiles();
   void set_std_column();
   void set_sum_squared_column();
   void set_sum_product_column();
@@ -75,23 +81,24 @@ public:
 
   void print_summary_stats();
 
-  void quicksort(double array[], int first, int last);
-  int partition(double array[], int first, int last);
-
 private:
   vector<vector<double>> matrixM;
   int rowsM;
-  int columnsM;
+  int colsM;
 
   vector<string> headerM;
-  vector<double> sum_columnsM;
-  vector<double> mean_columnsM;
-  vector<double> median_columnsM;
-  vector<double> std_columnsM;
-  vector<double> sum_squared_columnsM;
-  vector<double> mean_squared_columnsM;
-  vector<double> sum_product_columnsM;
-  vector<double> variance_columnsM;
+  vector<double> sumM;
+  vector<double> meanM;
+
+  vector<double> medianM;
+  vector<double> first_quartileM;
+  vector<double> third_quartileM;
+
+  vector<double> stddevM;
+  vector<double> sum_squaredM;
+  vector<double> mean_squaredM;
+  vector<double> sum_productM;
+  vector<double> varianceM;
 
   int dependent_columnM;
   vector<double> regression_coefficientsM;
