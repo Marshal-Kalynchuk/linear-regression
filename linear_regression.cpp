@@ -5,8 +5,11 @@
 #include <vector>
 #include <map>
 #include <sstream>
+#include <algorithm>
+#include <random>
 
 using namespace std;
+typedef vector<vector<double>> matrix;
 
 int main(){
 
@@ -22,7 +25,6 @@ int main(){
       string word;
       stringstream str(line);
       while (getline(str, word, ',')) {
-        cout << "|" << word << "|" << endl;
         row.push_back(word);
       }
       string_data.push_back(row);
@@ -36,7 +38,7 @@ int main(){
   vector<string> header = string_data[0];
   string_data.erase(string_data.begin());
 
-  vector<vector<double>> matrix;
+  matrix dataset;
   vector<double> row;
 
   map<string, double> class_label_map = {
@@ -61,16 +63,44 @@ int main(){
     row.push_back(class_label_map[string_data[i][4]]);
 
     // Add row to matrix
-    matrix.push_back(row);
+    dataset.push_back(row);
   }
 
+  // Split into train and test:
+  matrix train;
+  matrix test;
+
+  for (int i = 0; i < dataset.size(); i++){
+    if ((float) rand()/RAND_MAX > 0.66)
+      test.push_back(dataset[i]);
+    else 
+      train.push_back(dataset[i]);
+  }
+
+  // Train regression model:
+
   // Print data
+  
+  cout << "Training dataset: " << endl;
+  cout << "Rows: " << train.size() << endl;
   for(int i = 0; i < header.size(); i++)
     cout << header[i] << '\t';
   cout << '\n';
-  for(int i = 0; i < matrix.size(); i++){
-    for(int j = 0; j < matrix[i].size(); j++){
-      cout<<matrix[i][j]<<"\t\t";
+  for(int i = 0; i < train.size() && i < 5; i++){
+    for(int j = 0; j < train[i].size(); j++){
+      cout<<train[i][j]<<"\t\t";
+    }
+    cout<<"\n";
+  }
+
+  cout << "\nTest dataset: " << endl;
+  cout << "Rows: " << test.size() << endl;
+  for(int i = 0; i < header.size(); i++)
+    cout << header[i] << '\t';
+  cout << '\n';
+  for(int i = 0; i < test.size() && i < 5; i++){
+    for(int j = 0; j < test[i].size(); j++){
+      cout<<test[i][j]<<"\t\t";
     }
     cout<<"\n";
   }
