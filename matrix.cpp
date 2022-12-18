@@ -14,3 +14,39 @@ Matrix::Matrix(vector<vector<double>> dataset){
     matrixM.push_back(row);
   }
 }
+
+double Matrix::get_sum_column(int column_id) const{
+
+}
+
+double Matrix::get_mean_column(int column_id) const{
+
+}
+
+double Matrix::get_mean_squared_column(int column_id) const{
+
+}
+
+double Matrix::get_median_column(int column_id) const{
+
+}
+
+double Matrix::get_std_column(int column_id) const{
+
+}
+
+double Matrix::get_sum_squared_column(int column_id) const{
+
+}
+
+double Matrix::get_sum_product_column(int column_id) const{
+
+}
+
+Matrix Matrix::drop_row(int row_id) const{
+
+}
+
+Matrix Matrix::drop_column(int column_id) const{
+
+}
