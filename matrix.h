@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <vector>
 #include <cassert>
+#include <math.h>
 
 using namespace std;
 
@@ -53,12 +54,14 @@ public:
   // REQUIRES: Column index.
   // PROMISES: Drops a column in matrix and returns the dropped column.
 
-  void set_mean_column()const;
-  void set_mean_squared_column()const;
-  void set_median_column()const;
-  void set_std_column()const;
-  void set_sum_squared_column()const;
-  void set_sum_product_column()const;
+  void set_sum_column();
+  void set_mean_column();
+  void set_mean_squared_column();
+  void set_median_column();
+  void set_std_column();
+  void set_sum_squared_column();
+  void set_sum_product_column();
+  void set_variance_column();
 
 
 private:
@@ -74,6 +77,7 @@ private:
   vector<double> sum_squared_columnsM;
   vector<double> mean_squared_columnsM;
   vector<double> sum_product_columnsM;
+  vector<double> variance_columnsM;
 
 };
 

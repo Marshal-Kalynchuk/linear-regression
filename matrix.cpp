@@ -13,14 +13,19 @@ Matrix::Matrix(vector<vector<double>> dataset){
     }
     matrixM.push_back(row);
   }
+  // Init helper attrubute vectors:
+  sum_columnsM = vector<double>(columnsM, 0);
+  mean_columnsM = vector<double>(columnsM, 0);
+  median_columnsM = vector<double>(columnsM, 0);
+  std_columnsM = vector<double>(columnsM, 0);
+  sum_squared_columnsM = vector<double>(columnsM, 0);
+  mean_squared_columnsM = vector<double>(columnsM, 0);
+  sum_product_columnsM = vector<double>(columnsM, 0);
 }
 
 double Matrix::get_sum_column(int column_id) const{
   assert(column_id >= 0 && column_id < columnsM);
   return sum_columnsM[column_id];
-}
-void Matrix::set_sum_column()const{
-  
 }
 
 double Matrix::get_mean_column(int column_id) const{
@@ -58,5 +63,57 @@ Matrix Matrix::drop_row(int row_id) const{
 }
 
 Matrix Matrix::drop_column(int column_id) const{
+
+}
+
+void Matrix::set_sum_column(){
+  for(int i = 0; i < columnsM; i++){
+    sum_columnsM[i] = 0;
+    for (int j = 0; j < rowsM; j++)
+      sum_columnsM[i] += matrixM[j][i];
+  }
+}
+
+void Matrix::set_mean_column(){
+  for(int i = 0; i < columnsM; i++)
+    mean_columnsM[i] = sum_columnsM[i] / rowsM;
+}
+
+void Matrix::set_mean_squared_column(){
+  for(int i = 0; i < columnsM; i++)
+    mean_squared_columnsM[i] = mean_columnsM[i] * mean_columnsM[i];
+}
+
+void Matrix::set_median_column(){
+  for(int i = 0; i < columnsM; i++){
+    median_columnsM[i] = 0;
+    if (rowsM % 2 == 0)
+      median_columnsM[i] = (matrixM[i][rowsM / 2] + matrixM[i][(rowsM / 2) + 1]) / 2;
+    else
+      median_columnsM[i] = matrixM[i][rowsM / 2];
+  }
+}
+
+void Matrix::set_variance_column(){
+  for (int i = 0; i < columnsM; i++){
+    variance_columnsM[i] = (sum_squared_columnsM[i] - rowsM * mean_squared_columnsM[i]) / (rowsM - 1);
+  }
+}
+
+void Matrix::set_std_column(){
+  for (int i = 0; i < columnsM; i++){
+    std_columnsM[i] = sqrt(variance_columnsM[i]);
+  }
+}
+
+void Matrix::set_sum_squared_column(){
+  for(int i = 0; i < columnsM; i++){
+  sum_squared_columnsM[i] = 0;
+  for (int j = 0; j < rowsM; j++)
+    sum_columnsM[i] += matrixM[j][i] * matrixM[j][i];
+  }
+}
+
+void Matrix::set_sum_product_column(){
 
 }
