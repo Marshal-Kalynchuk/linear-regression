@@ -7,9 +7,15 @@
 #include <sstream>
 #include <algorithm>
 #include <random>
+#include <iomanip>
 
 using namespace std;
 typedef vector<vector<double>> matrix;
+
+template<typename T> void printElement(T t, const int& width)
+{
+  cout << left << setw(width) << setfill(' ') << t;
+}
 
 int main(){
 
@@ -82,6 +88,7 @@ int main(){
   int rows = train.size();
   int columns = train[0].size();
 
+  // Calculate statistics:
   double sum_xy[columns] = {0};
   double sum_x_squared[columns] = {0};
   double averages[columns] = {0};
@@ -97,26 +104,51 @@ int main(){
     averages[i] = averages[i] / rows;
   }
 
+  // Calculate B co-efficients:
+  int dependent_column = 0;
+  double coefficients[columns] = {0};
+  for (int i = 0; i < columns; i++){
+    coefficients[i] = (sum_xy[i] - rows * averages[i] * averages[dependent_column]) / (sum_x_squared[i] - rows * averages[dependent_column]);
+  }
+  // Calculate B intercept:
+  coefficients[dependent_column] = 0;
+  double intercept = averages[dependent_column];
+  for (int i = 0; i < columns; i++){
+    intercept -= coefficients[i] * averages[i];
+  }
+
+  std::cout << std::fixed;
+  std::cout << std::setprecision(4);
+
+  const int nameWidth     = 20;
+  const int numWidth      = 20;
+
   // Print data:
   cout << "Training dataset: " << endl;
   cout << "Rows: " << train.size() << endl;
   
-  cout << "Stats:\n\t\t";
+  cout << "Stats:\n\t\t\t";
   for(int i = 0; i < header.size(); i++)
-    cout << header[i] << '\t';
+    printElement(header[i], nameWidth);
   cout << '\n';
 
-  cout << "\nSum xy:\t\t";
+  cout << "\nSum xy:\t\t\t";
   for (int i = 0; i < columns; i++)
-    cout << sum_xy[i] << "\t\t";
+    printElement(sum_xy[i], numWidth);
     
-  cout << "\nSum x squared:\t";
+  cout << "\nSum x squared:\t\t";
   for (int i = 0; i < columns; i++)
-    cout << sum_x_squared[i] << "\t\t";
+    printElement(sum_x_squared[i], numWidth);
 
-  cout << "\nAverage:\t";
+  cout << "\nAverage:\t\t";
   for (int i = 0; i < columns; i++)
-    cout << averages[i] << "\t\t";
+    printElement(averages[i], numWidth);
+
+  cout << "\nB co-efficient:\t\t";
+  for (int i = 0; i < columns; i++)
+    printElement(coefficients[i], numWidth);
+
+  cout << "\nB intercept:\t\t" << intercept << endl;
 
   cout << "\n\nTop 5: " << endl;
   for(int i = 0; i < header.size(); i++)
