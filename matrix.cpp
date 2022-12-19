@@ -73,7 +73,27 @@ vector<double> Matrix::drop_column(int col){
 }
 
 Matrix Matrix::drop_outliers(){
-  
+  vector<vector<double>> outliers;
+  vector<double> first_quartile_cutoff(colsM, 0);
+  vector<double> third_quartile_cutoff(colsM, 0);
+  double inner_quartile_range = 0;
+  for (int i = 0; i < colsM; i++){
+    inner_quartile_range = third_quartileM[i] - first_quartileM[i];
+    first_quartile_cutoff[i] = first_quartileM[i] - 1.5 * inner_quartile_range;
+    third_quartile_cutoff[i] = third_quartileM[i] + 1.5 * inner_quartile_range;
+  }
+
+  for (int i = 0; i < rowsM; i++){
+    for (int j = 0; j < colsM; j++){
+      if (matrixM[i][j] < first_quartile_cutoff[j] || matrixM[i][j] > third_quartile_cutoff[j]){
+        outliers.push_back(matrixM[i]);
+        matrixM.erase(matrixM.begin() + i);
+        rowsM--;
+        break;
+      }
+    }
+  }
+  return Matrix(outliers, headerM);
 }
 
 void Matrix::set_regression_model(int dependent_column){

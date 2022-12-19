@@ -68,13 +68,29 @@ int main(){
     // Add row to matrix
     dataset.push_back(row);
   }
+  vector<double> test_values = {3.4,1.4,0.3,0};
   Matrix df(dataset, header);
   df.set_statistics();
   df.set_regression_model(0);
   df.print_summary_stats();
-  vector<double> test_values = {3.4,1.4,0.3,0};
+
   double res = df.predict(test_values);
-  cout << res << endl;
+  cout << "Predicted: " << res << "\tActual: 4.6" << endl;
+
+  Matrix outliers = df.drop_outliers();
+
+  cout << "\n\n================================================================\n\n";
+  outliers.set_statistics();
+  outliers.set_regression_model(0);
+  outliers.print_summary_stats();
+  cout << "\n\n================================================================\n\n";
+
+  df.set_statistics();
+  df.set_regression_model(0);
+  df.print_summary_stats();
+
+  res = df.predict(test_values);
+  cout << "Predicted: " << res << "\tActual: 4.6" << endl;
 
   #if 0
   // Split into train and test:
