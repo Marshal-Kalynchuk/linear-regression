@@ -81,10 +81,15 @@ public:
 
   void print_summary_stats();
 
+  void print_matrix(int rows);
+
 private:
   vector<vector<double>> matrixM;
   int rowsM;
   int colsM;
+
+  const int nameWidth     = 25;
+  const int numWidth      = 25;
 
   vector<string> headerM;
   vector<double> sumM;

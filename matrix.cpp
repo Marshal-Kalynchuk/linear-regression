@@ -198,11 +198,9 @@ template<typename T> void printElement(T t, const int& width){
   cout << left << setw(width) << setfill(' ') << t;
 }
 void Matrix::print_summary_stats(){
+
   std::cout << std::fixed;
   std::cout << std::setprecision(3);
-
-  const int nameWidth     = 25;
-  const int numWidth      = 25;
 
   std::cout << "Sample statistics:" << endl;
   printElement("Header:", nameWidth);
@@ -251,3 +249,21 @@ void Matrix::print_summary_stats(){
   std::cout << endl;
 }
 
+void Matrix::print_matrix(int rows){
+  std::cout << std::fixed;
+  std::cout << std::setprecision(3);
+
+  std::cout << "Matrix:" << endl;
+  printElement("Header:", nameWidth);
+  for(int i = 0; i < headerM.size(); i++)
+    printElement(headerM[i], nameWidth);
+  cout << '\n';
+  for (int i = 0; i < rows && i < rowsM; i++){
+    printElement("", nameWidth);
+    for (int j = 0; j < colsM; j++){
+      printElement(matrixM[i][j], numWidth);
+    }
+    cout << '\n';
+  }
+  cout << '\n';
+}

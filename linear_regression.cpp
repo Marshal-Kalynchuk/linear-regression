@@ -68,8 +68,24 @@ int main(){
     // Add row to matrix
     dataset.push_back(row);
   }
+
   vector<double> test_values = {3.4,1.4,0.3,0};
-  Matrix df(dataset, header);
+  vector<vector<double>> train, test;
+  double test_size = 0.2;
+
+  mt19937 rng(random_device{}());
+  uniform_real_distribution<double> dist(0, 1);
+
+  for (vector<double> x : dataset) {
+      if (dist(rng) < test_size) {
+          test.push_back(x);
+      } else {
+          train.push_back(x);
+      }
+  }
+
+  Matrix df(train, header);
+  df.print_matrix(10);
   df.set_statistics();
   df.set_regression_model(0);
   df.print_summary_stats();
@@ -79,35 +95,36 @@ int main(){
 
   Matrix outliers = df.drop_outliers();
 
-  cout << "\n\n================================================================\n\n";
-  outliers.set_statistics();
-  outliers.set_regression_model(0);
-  outliers.print_summary_stats();
-  cout << "\n\n================================================================\n\n";
+  cout << "\n\n===========================================================================================================================================\n\n";
+  cout << "Outliers: " << endl;
+  outliers.print_matrix(10);
+  cout << "\n\n===========================================================================================================================================\n\n";
 
+  df.print_matrix(10);
   df.set_statistics();
   df.set_regression_model(0);
   df.print_summary_stats();
 
-  res = df.predict(test_values);
-  cout << "Predicted: " << res << "\tActual: 4.6" << endl;
+  double mean_square_error = 0;
+  double mean_abs_per_error = 0;
 
-  #if 0
-  // Split into train and test:
-  matrix train;
-  matrix test;
-
-  random_shuffle(dataset.begin(), dataset.end());
-
-  for (int i = 0; i < dataset.size(); i++){
-    if ((float) rand()/RAND_MAX > 0.67)
-      test.push_back(dataset[i]);
-    else 
-      train.push_back(dataset[i]);
+  for (int i = 0; i < test.size(); i++) {
+      test_values[0] = test[i][1];
+      test_values[1] = test[i][2];
+      test_values[2] = test[i][3];
+      test_values[3] = test[i][4];
+      res = df.predict(test_values);
+      mean_abs_per_error += abs(test[i][0] - res) / test[i][0];
+      mean_square_error += (res - test[i][0]) * (res - test[i][0]);
+      cout << "Predicted: " << res << "\tActual: " << test[i][0] << endl;
   }
+  mean_square_error /= test.size();
+  mean_abs_per_error /= test.size();
 
-  #endif
+  cout << "Mean Square Error: " << mean_square_error << endl;
+  cout << "Mean Absolute Percentage Error: " << mean_abs_per_error << endl;
 
   return 0;
 }
+
 
